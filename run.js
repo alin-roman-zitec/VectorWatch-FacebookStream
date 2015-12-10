@@ -111,7 +111,7 @@ var getStreamDataForState = function(state, accessToken) {
     return accessTokenPromise.then(function(accessToken) {
         if (from == 'LAST_POST') {
             return facebookApi.getLastPostCounts(account, accessToken).then(function(counts){
-                return 'L ' + counts.likes + ', C ' + counts.comments;
+                return '\ue02f ' + counts.likes + ' \ue02e ' + counts.comments;
             });
         }
 
@@ -126,14 +126,14 @@ var getStreamDataForState = function(state, accessToken) {
                 }
 
                 var lines = [event.name];
-                if (event.location) lines.push(event.location);
+                if (event.location) lines.push('\ue021 ' + event.location);
                 var then = moment(event.date);
                 if (then.isSame(new Date(), 'day')) {
-                    lines.push(then.format('h:mm a'));
+                    lines.push('\ue02b '+ then.format('h:mm a'));
                 } else {
-                    lines.push(then.format('MMM Do YY'));
+                    lines.push('\ue02b ' + then.format('MMM Do YY'));
                 }
-                lines.push(then.fromNow(true) + ' left');
+                lines.push('\ue02c ' + then.fromNow(true) + ' left');
 
                 return lines.join('\n');
             });
@@ -146,29 +146,32 @@ var getStreamDataForState = function(state, accessToken) {
 
         if (from == 'NOTIFICATIONS') {
             return facebookApi.getPageCounts(account, accessToken).then(function(counts) {
-                return 'L ' + counts.newLikes + ', M ' + counts.newMessages + ', N ' + counts.newNotifications;
+                return '\ue02f ' + counts.newLikes + ' M ' + counts.newMessages + ' \ue026 ' + counts.newNotifications;
             });
         }
 
         if (from == 'INSIGHTS') {
-            var formatWeeklyInsights = function(counts) {
-                var percent = 0;
-                if (counts.lastWeek != counts.thisWeek) {
-                    percent = (counts.thisWeek - counts.lastWeek) / Math.max(counts.thisWeek, counts.lastWeek);
-                }
-                var sign = percent == 0 ? '' : (percent < 0 ? '-' : '+');
-                percent = Math.abs(Math.round(percent * 1000) / 10);
-                return counts.thisWeek + ', ' + sign + percent + '%';
+            var formatWeeklyInsights = function(icon) {
+                return function(counts) {
+                    var percent = 0;
+                    if (counts.lastWeek != counts.thisWeek) {
+                        percent = (counts.thisWeek - counts.lastWeek) / Math.max(counts.thisWeek, counts.lastWeek);
+                    }
+
+                    var sign = percent == 0 ? '' : (percent < 0 ? '\u00AD' : '\ue022');
+                    percent = Math.abs(Math.round(percent * 1000) / 10);
+                    return icon + ' ' + counts.thisWeek + ' ' + sign + percent + '%';
+                };
             };
 
             if (option == 'REACH') {
-                return facebookApi.getPageWeeklyReach(account, accessToken).then(formatWeeklyInsights);
+                return facebookApi.getPageWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue023'));
             } else if (option == 'ENGAGEMENT') {
-                return facebookApi.getPageWeeklyEngagement(account, accessToken).then(formatWeeklyInsights);
+                return facebookApi.getPageWeeklyEngagement(account, accessToken).then(formatWeeklyInsights('\ue036'));
             } else if (option == 'LIKES') {
-                return facebookApi.getPageWeeklyLikes(account, accessToken).then(formatWeeklyInsights);
+                return facebookApi.getPageWeeklyLikes(account, accessToken).then(formatWeeklyInsights('\ue02f'));
             } else if (option == 'NEW_LIKES') {
-                return facebookApi.getPageWeeklyNewLikes(account, accessToken).then(formatWeeklyInsights);
+                return facebookApi.getPageWeeklyNewLikes(account, accessToken).then(formatWeeklyInsights('\ue02f'));
             } else {
                 return 'N/A';
             }
