@@ -246,12 +246,20 @@ FacebookApi.prototype.getPageWeeklyReach = function(pageId, accessToken) {
     return this.getWeeklyInsights(pageId, 'page_impressions_unique', accessToken);
 };
 
+FacebookApi.prototype.getPostWeeklyReach = function(pageId, accessToken) {
+    return this.getWeeklyInsights(pageId, 'page_posts_impressions_unique', accessToken);
+};
+
 FacebookApi.prototype.getPageWeeklyEngagement = function(pageId, accessToken) {
     return this.getWeeklyInsights(pageId, 'page_engaged_users', accessToken);
 };
 
 FacebookApi.prototype.getPageWeeklyNewLikes = function(pageId, accessToken) {
     return this.getWeeklyInsights(pageId, 'page_fan_adds', accessToken);
+};
+
+FacebookApi.prototype.getPageClicks = function(pageId, accessToken) {
+    return this.getWeeklyInsights(pageId, 'page_consumptions', accessToken);
 };
 
 FacebookApi.prototype.getPageWeeklyLikes = function(pageId, accessToken) {
@@ -278,6 +286,37 @@ FacebookApi.prototype.getPageWeeklyLikes = function(pageId, accessToken) {
     });
 };
 
+FacebookApi.prototype.getPositiveFeedback = function(pageId, accessToken) {
+    var aDay = 24 * 60 * 60;
+    var toUnix = 0.001;
+    var today = Math.floor(Date.now() / aDay * toUnix) * aDay;
+    var tomorrow = today + aDay;
+    var twoWeeksAgo = tomorrow - aDay  * 14;
+
+    var path = '/' + pageId + '/insights/page_positive_feedback_by_type/day?since=' + twoWeeksAgo + '&until=' + tomorrow;
+    return this.get(path, accessToken).then(function(data) {
+        var counts = {
+            thisWeek: 0,
+            lastWeek: 0
+        };
+        var values = data && data.data && data.data[0] && data.data[0].values;
+        if (!values) return counts;
+        values.sort(function(a, b) { return (new Date(a.end_time)).getTime() - (new Date(b.end_time)).getTime(); });
+
+        var sumFn = function(sumObj, item) {
+            return {
+                likes: Number(item.value.like) + sumObj.likes || 0,
+                comments: Number(item.value.comment) + sumObj.comments || 0,
+                shares: Number(item.value.link) + sumObj.shares || 0
+            };
+        };
+
+        counts.lastWeek = values.slice(0, 7).reduce(sumFn, {});
+        counts.thisWeek = values.slice(7).reduce(sumFn, {});
+
+        return counts;
+    });
+};
 
 function FacebookApiError(rawError) {
     this.raw = rawError;

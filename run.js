@@ -165,15 +165,45 @@ var getStreamDataForState = function(state, accessToken) {
             };
 
             if (option == 'REACH') {
-                return facebookApi.getPageWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue023'));
+                return Promise.join(
+                    facebookApi.getPageWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue023 Total')),
+                    facebookApi.getPostWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue034 Post Reach')),
+                    function(pageReach, postReach) {
+                        return [pageReach, postReach].join('\n');
+                    }
+                );
             } else if (option == 'ENGAGEMENT') {
-                return facebookApi.getPageWeeklyEngagement(account, accessToken).then(formatWeeklyInsights('\ue036'));
+                return Promise.join(
+                    facebookApi.getPageWeeklyEngagement(account, accessToken).then(formatWeeklyInsights('\ue036')),
+                    facebookApi.getPageClicks(account, accessToken).then(formatWeeklyInsights('\ue037')),
+                    facebookApi.getPositiveFeedback(account, accessToken),
+                    function(engagement, clicks, feedback) {
+                        var feedbackInversed = {};
+                        for (var period in feedback) {
+                            for (var prop in feedback[period]) {
+                                if (!feedbackInversed[prop]) {
+                                    feedbackInversed[prop] = {};
+                                }
+                                feedbackInversed[prop][period] = feedback[period][prop];
+                            }
+                        }
+                        return [
+                            engagement,
+                            clicks,
+                            formatWeeklyInsights('\ue02f')(feedbackInversed.likes),
+                            formatWeeklyInsights('\ue02e')(feedbackInversed.comments),
+                            formatWeeklyInsights('\ue030')(feedbackInversed.shares)
+                        ].join('\n');
+                    }
+                );
             } else if (option == 'LIKES') {
-                return facebookApi.getPageWeeklyLikes(account, accessToken).then(formatWeeklyInsights('\ue02f'));
-            } else if (option == 'NEW_LIKES') {
-                return facebookApi.getPageWeeklyNewLikes(account, accessToken).then(formatWeeklyInsights('\ue02f'));
-            } else {
-                return 'N/A';
+                return Promise.join(
+                    facebookApi.getPageWeeklyLikes(account, accessToken).then(formatWeeklyInsights('\ue02f Total ')),
+                    facebookApi.getPageWeeklyNewLikes(account, accessToken).then(formatWeeklyInsights('\ue02f This week ')),
+                    function (total, thisWeek) {
+                        return [total, thisWeek].join('\n');
+                    }
+                );
             }
         }
 
@@ -182,6 +212,8 @@ var getStreamDataForState = function(state, accessToken) {
                 return details.name;
             });
         }
+
+        return 'N/A';
     });
 };
 
