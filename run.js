@@ -146,7 +146,7 @@ var getStreamDataForState = function(state, accessToken) {
 
         if (from == 'NOTIFICATIONS') {
             return facebookApi.getPageCounts(account, accessToken).then(function(counts) {
-                return '\ue02f ' + counts.newLikes + ' M ' + counts.newMessages + ' \ue026 ' + counts.newNotifications;
+                return '\ue02f ' + counts.newLikes + ' \ue031 ' + counts.newMessages + ' \ue026 ' + counts.newNotifications;
             });
         }
 
@@ -158,7 +158,7 @@ var getStreamDataForState = function(state, accessToken) {
                         percent = (counts.thisWeek - counts.lastWeek) / Math.max(counts.thisWeek, counts.lastWeek);
                     }
 
-                    var sign = percent == 0 ? '' : (percent < 0 ? '\u00AD' : '\ue022');
+                    var sign = percent == 0 ? '' : (percent < 0 ? '\u0039' : '\ue022');
                     percent = Math.abs(Math.round(percent * 1000) / 10);
                     return icon + ' ' + counts.thisWeek + ' ' + sign + percent + '%';
                 };
