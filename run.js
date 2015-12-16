@@ -386,9 +386,9 @@ vectorStream.requestOptions = function(resolve, reject, settingName, value, stat
             ]);
         } else {
             resolve([
+                { name: 'Latest Post', value: 'LAST_POST' },
                 { name: 'Notifications', value: 'NOTIFICATIONS' },
                 { name: 'Insights', value: 'INSIGHTS' },
-                { name: 'Latest Post', value: 'LAST_POST' },
                 { name: 'Page Name', value: 'DETAILS' }
             ]);
         }
@@ -401,8 +401,7 @@ vectorStream.requestOptions = function(resolve, reject, settingName, value, stat
             resolve([]);
         } else if (from == 'INSIGHTS') {
             resolve([
-                { name: 'Total Likes', value: 'LIKES' },
-                { name: 'New Likes this Week', value: 'NEW_LIKES' },
+                { name: 'Likes', value: 'LIKES' },
                 { name: 'Reach', value: 'REACH' },
                 { name: 'Engagement', value: 'ENGAGEMENT' }
             ]);
