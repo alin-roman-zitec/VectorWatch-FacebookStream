@@ -97,6 +97,9 @@ var getAccessTokenForState = function(state) {
 };
 
 var getStreamDataForState = function(state, accessToken) {
+    if (!state) {
+        return Promise.reject(new Error('Invalid state.'));
+    }
     var accessTokenPromise;
     if (accessToken) {
         accessTokenPromise = Promise.resolve(accessToken);
@@ -420,8 +423,12 @@ setInterval(function() {
     vectorStream.retrieveSettings(function(states) {
         for (var channelLabel in states) {
             (function(state) {
+                if (!state) return;
+
                 getStreamDataForState(state).then(function(value) {
                     vectorStream.push(state, value, 0.1);
+                }).catch(FacebookApi.FacebookOAuthError, function(err) {
+                    vectorStream.authTokensForStateExpired(state);
                 }).catch(function(err) {
                     console.error('Could not get stream data for state.', err.stack || err);
                 });
