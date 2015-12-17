@@ -313,6 +313,10 @@ vectorStream.unregisterSettings = function(settings) {
 };
 
 vectorStream.requestConfig = function(resolve, reject, authTokens) {
+    if (!authTokens) {
+        return reject(new Error('Invalid auth tokens.'), 901);
+    }
+
     facebookApi.getPages(authTokens.access_token).then(function(pages) {
         var fbPages = pages.map(function (item) {
             return {
