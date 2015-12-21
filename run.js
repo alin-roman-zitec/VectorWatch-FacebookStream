@@ -270,6 +270,9 @@ vectorStream.registerSettings = function(resolve, reject, settings, authTokens) 
                     vectorStream.stateStorage.store(storageKey, association, callback);
                 } else {
                     association.push(settings.channelLabel);
+                    association = association.filter(function(value, index, self) {
+                        return self.indexOf(value) === index;
+                    });
                     vectorStream.stateStorage.replace(storageKey, association, callback);
                 }
             });
