@@ -149,7 +149,7 @@ var getStreamDataForState = function(state, accessToken) {
 
         if (from == 'NOTIFICATIONS') {
             return facebookApi.getPageCounts(account, accessToken).then(function(counts) {
-                return '\ue02f ' + counts.newLikes + ' \ue031 ' + counts.newMessages + ' \ue026 ' + counts.newNotifications;
+                return '\ue02f ' + counts.newLikes + ' \ue031 ' + counts.newMessages + ' \ue03b ' + counts.newNotifications;
             });
         }
 
@@ -169,7 +169,7 @@ var getStreamDataForState = function(state, accessToken) {
 
             if (option == 'REACH') {
                 return Promise.join(
-                    facebookApi.getPageWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue023 Total')),
+                    facebookApi.getPageWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue03c Total')),
                     facebookApi.getPostWeeklyReach(account, accessToken).then(formatWeeklyInsights('\ue034 Post Reach')),
                     function(pageReach, postReach) {
                         return [pageReach, postReach].join('\n');
