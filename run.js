@@ -291,7 +291,7 @@ vectorStream.registerSettings = function(resolve, reject, settings, authTokens) 
     });
 };
 
-vectorStream.unregisterSettings = function(settings) {
+vectorStream.unregisterSettings = function(settings, authTokens) {
     if (eligibleForPageRTUs(settings)) {
         var storageKey = 'pageid_' + settings.Account;
         vectorStream.stateStorage.retrieve(storageKey, function (err, association) {
@@ -311,6 +311,32 @@ vectorStream.unregisterSettings = function(settings) {
             } else {
                 vectorStream.stateStorage.replace(storageKey, association, callback);
             }
+        });
+    } else if (settings.Account == 'me') {
+        facebookApi.getUserId(authTokens.access_token).then(function(userId) {
+            var storageKey = 'userid_' + userId;
+            vectorStream.stateStorage.retrieve(storageKey, function(err, association) {
+                if (err) return console.error('Could not retrieve userId-channelLabels associations', err.stack || err);
+
+                var callback = function(err) {
+                    if (err) return console.error('Could not save userId-channelLabels associations', err.stack || err);
+                };
+
+                if (!association) {
+                    return;
+                } else {
+                    association = association.filter(function(value) {
+                        return value != settings.channelLabel;
+                    });
+                    if (association.length) {
+                        vectorStream.stateStorage.replace(storageKey, association, callback);
+                    } else {
+                        vectorStream.stateStorage.remove(storageKey, callback);
+                    }
+                }
+            });
+        }).catch(function(err) {
+            console.error('Could not get userId', err.stack || err);
         });
     }
 };
