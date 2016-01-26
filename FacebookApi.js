@@ -324,9 +324,9 @@ function FacebookApiError(rawError) {
     this.name = 'FacebookApiError';
     Error.captureStackTrace(this, FacebookApiError);
 }
+FacebookApiError.prototype = Object.create(Error.prototype);
 FacebookApiError.prototype.getType = function() { return this.raw.type; };
 FacebookApiError.prototype.getRaw = function() { return this.raw; };
-FacebookApiError.prototype = Object.create(Error.prototype);
 FacebookApiError.prototype.constructor = FacebookApiError;
 
 function FacebookOAuthError(rawError) {
