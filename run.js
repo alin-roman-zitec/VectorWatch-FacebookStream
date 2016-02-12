@@ -520,6 +520,6 @@ function handlePagePush(entry) {
 }
 
 
-http.createServer(app).listen(8080, function() {
+http.createServer(app).listen(process.env.PORT || 8080, function() {
     console.log('Non-secure server started.');
 });
