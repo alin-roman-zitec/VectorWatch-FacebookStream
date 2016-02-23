@@ -8,8 +8,11 @@
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "moment": "^2.10.6",
+    "mysql": "^2.10.2",
     "oauth": "^0.9.14",
-    "stream-dev-tools": "git://github.com/alin-roman-zitec/streams-dev-tools.git#apps"
+    "vectorwatch-authprovider-oauth2": "^1.0.2",
+    "vectorwatch-sdk": "^1.0.5",
+    "vectorwatch-storageprovider-mysql": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
