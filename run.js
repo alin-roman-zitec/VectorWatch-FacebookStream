@@ -131,11 +131,12 @@ var getStreamDataForState = function(state, accessToken) {
                 var lines = [event.name];
                 if (event.location) lines.push('\ue021 ' + event.location);
                 var then = moment(event.date);
-                if (then.isSame(new Date(), 'day')) {
-                    lines.push('\ue02b '+ then.format('h:mm a'));
-                } else {
-                    lines.push('\ue02b ' + then.format('MMM Do YY'));
-                }
+                // todo: display event date in it's timezone
+                //if (then.isSame(new Date(), 'day')) {
+                //    lines.push('\ue02b '+ then.format('h:mm a'));
+                //} else {
+                //    lines.push('\ue02b ' + then.format('MMM Do YY'));
+                //}
                 lines.push('\ue02c ' + then.fromNow(true) + ' left');
 
                 return lines.join('\n');
